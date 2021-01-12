@@ -7,6 +7,8 @@
 #include "mmu.h"
 #include "proc.h"
 
+int num_sys_calls = -1;
+
 int
 sys_fork(void)
 {
@@ -88,4 +90,14 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// return the number of system calls that have been called since boot
+int
+sys_getsyscallinfo(void)
+{
+    if (num_sys_calls == -1)
+        return num_sys_calls;
+    else
+        return num_sys_calls +1;
 }

@@ -32,7 +32,9 @@ OBJS = \
 # TOOLPREFIX = i386-jos-elf
 
 # Using native tools (e.g., on X86 Linux)
+# Mac Config
 TOOLPREFIX = i386-elf-
+# TOOLPREFIX = x86_64-elf-
 
 # Try to infer the correct TOOLPREFIX if not set
 ifndef TOOLPREFIX
@@ -51,7 +53,11 @@ TOOLPREFIX := $(shell if i386-jos-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/d
 endif
 
 # If the makefile can't find QEMU, specify its path here
-# QEMU = qemu-system-i386
+QEMU = qemu-system-i386
+# QEMU = qemu-system-x86_64
+
+# OS2 Config 
+# QEMU = /usr/libexec/qemu-kvm
 
 # Try to infer the correct QEMU
 ifndef QEMU
@@ -181,6 +187,7 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
+	_getsyscallinfo\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -249,7 +256,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
-	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
+	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c getsyscallinfo.c\
 	printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
