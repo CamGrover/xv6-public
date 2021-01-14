@@ -32,7 +32,7 @@ OBJS = \
 # TOOLPREFIX = i386-jos-elf
 
 # Using native tools (e.g., on X86 Linux)
-TOOLPREFIX = i386-elf-
+#TOOLPREFIX =
 
 # Try to infer the correct TOOLPREFIX if not set
 ifndef TOOLPREFIX
@@ -50,6 +50,20 @@ TOOLPREFIX := $(shell if i386-jos-elf-objdump -i 2>&1 | grep '^elf32-i386$$' >/d
 	echo "***" 1>&2; exit 1; fi)
 endif
 
+# Determine OS for compilation
+UNAME := $(shell uname)
+
+# OS2 Config
+ifeq ($(UNAME), Linux)
+	QEMU = /usr/libexec/qemu-kvm
+endif
+ifeq ($(UNAME), Darwin)
+	QEMU = qemu-system-i386
+	# QEMU = qemu-system-x86_64
+	# TOOLPREFIX = i386-jos-elf
+	TOOLPREFIX = i386-elf-
+    # TOOLPREFIX = x86_64-elf-
+endif
 # If the makefile can't find QEMU, specify its path here
 # QEMU = qemu-system-i386
 
