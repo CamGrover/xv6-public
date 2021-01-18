@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+#define RAND_MAX ((1U << 31) - 1)
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -19,6 +21,19 @@ extern void forkret(void);
 extern void trapret(void);
 
 static void wakeup1(void *chan);
+
+static int rand(int);
+static int seed = 1;
+
+// Source: https://rosettacode.org/wiki/Linear_congruential_generator#C
+static int
+rand(int max)
+{
+    if (max <= 0) {return -1;}
+
+    seed = (seed * 1103515245 + 12345) & RAND_MAX;
+    return seed % max + 1;
+}
 
 void
 pinit(void)
@@ -88,6 +103,10 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 1;
+  p->tickets = 1;
+
+  high_tickets += p->tickets;
 
   release(&ptable.lock);
 
@@ -325,17 +344,36 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
+    // Lottery Scheduling
+    int ticket_drawn = 0;
+    int tickets_checked = 0;
+
+    if (high_tickets > 0)
+        ticket_drawn = rand(high_tickets);
+    else if (low_tickets > 0)
+        ticket_drawn = rand(low_tickets);
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
 
+      // If there are high_tickets then there must be a high priority proc in queue. If not check all processes as they
+      // must be on low priority.
+      if ((high_tickets && p->priority == 1) || !high_tickets)
+      {
+          if ((tickets_checked += p->tickets) < ticket_drawn)
+              continue;
+      }
+      else
+          continue;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -376,6 +414,13 @@ sched(void)
     panic("sched running");
   if(readeflags()&FL_IF)
     panic("sched interruptible");
+  // Move proc to lower priority and manage tickets
+  if (p->priority == 1)
+  {
+      p->priority = 2;
+      high_tickets -= p->tickets;
+      low_tickets += p->tickets;
+  }
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
   mycpu()->intena = intena;
