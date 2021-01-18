@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "pstat.h"
 
 #define RAND_MAX ((1U << 31) - 1)
 
@@ -576,4 +577,37 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int
+settickets(int t)
+{
+    if !(t > 0)
+        return -1;
+    myproc()->tickets = t;
+    return 0;
+}
+
+int
+getpinfo(struct pstat* ps)
+{
+    if (!ps)
+        return -1;
+    int i = 0;
+    struct proc *p;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if (p->state == UNUSED){
+            ps->inuse = 0;
+            ps->pid = 0;
+            ps->hticks = 0;
+            ps->lticks = 0;
+        }
+        else {
+            ps->inuse = 1;
+            ps->pid = p->pid;
+            ps->hticks = p->hticks;
+            ps->lticks = p->lticks;
+        }
+    }
+    return 0;
 }
