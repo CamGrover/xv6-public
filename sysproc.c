@@ -112,7 +112,7 @@ sys_getpinfo(void)
             struct proc proc[NPROC];
         } *ptable = myptable();
     struct pstat* ps;
-    if (argptr(0, (void*)&ps, sizeof(*ps)) < 0)
+    if (argptr(0, (void*)&ps, sizeof(ps)) < 0)
         return -1;
 
     int i = 0;
