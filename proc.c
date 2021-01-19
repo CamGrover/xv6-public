@@ -109,6 +109,8 @@ found:
   p->pid = nextpid++;
   p->priority = 1;
   p->tickets = 1;
+  p->hticks = 0;
+  p->lticks = 0;
 
   high_tickets += p->tickets;
 
@@ -422,9 +424,12 @@ sched(void)
   if (p->priority == 1)
   {
       p->priority = 2;
+      p->hticks += 1;
       high_tickets -= p->tickets;
       low_tickets += p->tickets;
   }
+  else
+      p->lticks += 1;
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
   mycpu()->intena = intena;
