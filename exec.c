@@ -101,6 +101,8 @@ exec(char *path, char **argv)
   curproc->tf->esp = sp;
   curproc->priority = 1;
   curproc->tickets = 1;
+  curproc->hticks = 0;
+  curproc->lticks = 0;
   high_tickets += curproc->priority;
   switchuvm(curproc);
   freevm(oldpgdir);
