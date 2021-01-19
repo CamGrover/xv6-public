@@ -21,6 +21,9 @@ int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
 
+int high_tickets = 0;
+int low_tickets = 0;
+
 static void wakeup1(void *chan);
 
 static int rand(int);
@@ -579,35 +582,6 @@ procdump(void)
   }
 }
 
-int
-settickets(int t)
-{
-    if !(t > 0)
-        return -1;
-    myproc()->tickets = t;
-    return 0;
-}
-
-int
-getpinfo(struct pstat* ps)
-{
-    if (!ps)
-        return -1;
-    int i = 0;
-    struct proc *p;
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-        if (p->state == UNUSED){
-            ps->inuse = 0;
-            ps->pid = 0;
-            ps->hticks = 0;
-            ps->lticks = 0;
-        }
-        else {
-            ps->inuse = 1;
-            ps->pid = p->pid;
-            ps->hticks = p->hticks;
-            ps->lticks = p->lticks;
-        }
-    }
-    return 0;
+void* myptable(void){
+    return &ptable;
 }
