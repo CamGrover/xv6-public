@@ -61,6 +61,6 @@ struct proc {
 //   fixed-size stack
 //   expandable heap
 
-// For use use scheduler
-int high_tickets = 0;
-int low_tickets = 0;
+// For use in scheduler
+extern int high_tickets;
+extern int low_tickets;
