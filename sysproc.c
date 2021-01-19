@@ -6,6 +6,8 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "pstat.h"
+#include "spinlock.h"
 
 int
 sys_fork(void)
@@ -88,4 +90,47 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int
+sys_settickets(void)
+{
+    int t;
+    if (argint(0, &t) < 0)
+        return -1;
+    if (t <= 0)
+        return -1;
+    myproc()->tickets = t;
+    return 0;
+}
+
+int
+sys_getpinfo(void)
+{
+    struct{
+            struct spinlock lock;
+            struct proc proc[NPROC];
+        } *ptable = myptable();
+    struct pstat* ps;
+    if (argptr(0, (void*)&ps, sizeof(*ps)) < 0)
+        return -1;
+
+    int i = 0;
+    struct proc *p;
+    for(p = ptable->proc; p < &ptable->proc[NPROC]; p++){
+        if (p->state == UNUSED){
+            ps->inuse[i] = 0;
+            ps->pid[i] = 0;
+            ps->hticks[i] = 0;
+            ps->lticks[i] = 0;
+        }
+        else {
+            ps->inuse[i] = 1;
+            ps->pid[i] = p->pid;
+            ps->hticks[i] = p->hticks;
+            ps->lticks[i] = p->lticks;
+        }
+        i++;
+    }
+    return 0;
 }
