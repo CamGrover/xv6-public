@@ -373,13 +373,14 @@ scheduler(void)
 
       // If there are high_tickets then there must be a high priority proc in queue. If not check all processes as they
       // must be on low priority.
-      if ((high_tickets && p->priority == 1) || !high_tickets)
+      if ((high_tickets > 0 && p->priority == 1) || high_tickets <= 0)
       {
           if ((tickets_checked += p->tickets) < ticket_drawn)
               continue;
       }
       else
           continue;
+
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -423,8 +424,8 @@ sched(void)
   // Move proc to lower priority and manage tickets
   if (p->priority == 1)
   {
-      p->priority = 2;
       p->hticks += 1;
+      p->priority = 2;
       high_tickets -= p->tickets;
       low_tickets += p->tickets;
   }
