@@ -107,15 +107,16 @@ sys_settickets(void)
 int
 sys_getpinfo(void)
 {
-    struct{
+    struct ptable{
             struct spinlock lock;
             struct proc proc[NPROC];
-        } *ptable = myptable();
+        } *ptable = (struct ptable*)myptable();
     struct pstat* ps;
-    if (argptr(0, (void*)&ps, sizeof(ps)) < 0)
+    int i;
+    if (argptr(0, (void*)&ps, sizeof(ps)) < 0 || argint(1, &i))
         return -1;
-
-    int i = 0;
+//    n = 0;
+    i = 0;
     struct proc *p;
     for(p = ptable->proc; p < &ptable->proc[NPROC]; p++){
         if (p->state == UNUSED){
@@ -123,12 +124,14 @@ sys_getpinfo(void)
             ps->pid[i] = 0;
             ps->hticks[i] = 0;
             ps->lticks[i] = 0;
+            ps->tickets[i] = 0;
         }
         else {
             ps->inuse[i] = 1;
             ps->pid[i] = p->pid;
             ps->hticks[i] = p->hticks;
             ps->lticks[i] = p->lticks;
+            ps->tickets[i] = p->tickets;
         }
         i++;
     }
