@@ -12,6 +12,7 @@ struct pstat {
     int pid[NPROC];   // the PID of each process
     int hticks[NPROC]; // the number of ticks each process has accumulated at HIGH priority
     int lticks[NPROC]; // the number of ticks each process has accumulated at LOW priority
+    int tickets[NPROC]; // The number of tickets each process is holding
 };
 
 
