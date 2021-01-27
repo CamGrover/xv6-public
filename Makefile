@@ -27,6 +27,7 @@ OBJS = \
 	uart.o\
 	vectors.o\
 	vm.o\
+	$(NULL)
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf
@@ -70,15 +71,17 @@ QEMU = $(shell if which qemu > /dev/null; \
 	echo "*** or have you tried setting the QEMU variable in Makefile?" 1>&2; \
 	echo "***" 1>&2; exit 1)
 endif
+QEMU = ./qemu-system-i386
 
 CC = $(TOOLPREFIX)gcc
 AS = $(TOOLPREFIX)gas
 LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
+DEFINES =
+CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
-ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
+ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
 # FreeBSD ld wants ``elf_i386_fbsd''
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null | head -n 1)
 
@@ -192,7 +195,7 @@ clean:
 	*.o *.d *.asm *.sym vectors.S bootblock entryother \
 	initcode initcode.out kernel xv6.img fs.img kernelmemfs \
 	xv6memfs.img mkfs .gdbinit \
-	$(UPROGS)
+	$(UPROGS) *~ \#*
 
 # make a printout
 FILES = $(shell grep -v '^\#' runoff.list)
@@ -217,9 +220,11 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
 ifndef CPUS
-CPUS := 2
+CPUS := 1
 endif
 QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
+
+os: fs.img xv6.img
 
 qemu: fs.img xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
@@ -227,7 +232,7 @@ qemu: fs.img xv6.img
 qemu-memfs: xv6memfs.img
 	$(QEMU) -drive file=xv6memfs.img,index=0,media=disk,format=raw -smp $(CPUS) -m 256
 
-qemu-nox: fs.img xv6.img
+nox qemu-nox: fs.img xv6.img
 	$(QEMU) -nographic $(QEMUOPTS)
 
 .gdbinit: .gdbinit.tmpl
@@ -277,10 +282,16 @@ dist-test:
 
 # update this rule (change rev#) when it is time to
 # make a new revision.
-tar:
-	rm -rf /tmp/xv6
-	mkdir -p /tmp/xv6
-	cp dist/* dist/.gdbinit.tmpl /tmp/xv6
-	(cd /tmp; tar cf - xv6) | gzip >xv6-rev10.tar.gz  # the next one will be 10 (9/17)
+#tar:
+#	rm -rf /tmp/xv6
+#	mkdir -p /tmp/xv6
+#	cp dist/* dist/.gdbinit.tmpl /tmp/xv6
+#	(cd /tmp; tar cf - xv6) | gzip >xv6-rev10.tar.gz  # the next one will be 10 (9/17)
+
+DIR = $(shell basename $(PWD))
+
+teach:
+	make clean
+	cd ..; tar --exclude-backups --exclude-vcs -c -a -f ./${LOGNAME}-$(DIR)-xv6.tar.gz $(DIR)
 
 .PHONY: dist-test dist
