@@ -75,11 +75,14 @@ cprintf(char *fmt, ...)
     if(c == 0)
       break;
     switch(c){
+    case 'u':
     case 'd':
       printint(*argp++, 10, 1);
       break;
     case 'x':
     case 'p':
+      consputc('0');
+      consputc('x');
       printint(*argp++, 16, 0);
       break;
     case 's':

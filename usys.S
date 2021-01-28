@@ -32,3 +32,6 @@ SYSCALL(uptime)
 #ifdef GETPPID
 SYSCALL(getppid)
 #endif // GETPPID
+#ifdef CPS
+SYSCALL(cps)
+#endif // GETPPID

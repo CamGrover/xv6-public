@@ -110,9 +110,12 @@ void* malloc(uint);
 void free(void*);
 int atoi(const char*);
 
-
 #ifdef GETPPID
 int getppid(void);
 #endif // GETPPID
+
+#ifdef CPS
+int cps(int);
+#endif // CPS
 
 #endif // __USER_H

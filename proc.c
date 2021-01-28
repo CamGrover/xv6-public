@@ -20,6 +20,15 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
+static char *states[] = {
+  [UNUSED]    "unused",
+  [EMBRYO]    "embryo",
+  [SLEEPING]  "sleep ",
+  [RUNNABLE]  "runble",
+  [RUNNING]   "run   ",
+  [ZOMBIE]    "zombie"
+};
+
 void
 pinit(void)
 {
@@ -496,6 +505,47 @@ kill(int pid)
   return -1;
 }
 
+#ifdef CPS
+int
+sys_cps(void)
+{
+  int i;
+  const char *state = 0x0;
+
+  acquire(&ptable.lock);
+
+  cprintf(
+    "pid\tppid\tname\tstate\tsize"
+  );
+  cprintf("\n");
+  for (i = 0; i < NPROC; i++) {
+    if (ptable.proc[i].state != UNUSED) {
+      if (ptable.proc[i].state >= 0 && ptable.proc[i].state < NELEM(states)
+          && states[ptable.proc[i].state]) {
+            state = states[ptable.proc[i].state];
+      }
+      else {
+        state = "unkown";
+      }
+      cprintf("%d\t%d\t%s\t%s\t%u"
+        , ptable.proc[i].pid
+        , ptable.proc[i].parent ? ptable.proc[i].parent->pid : 1
+        , ptable.proc[i].name
+        , state
+        , ptable.proc[i].sz
+      );
+      cprintf("\n");
+    }
+    else {
+      // UNUSED process table entry is ignored
+    }
+  }
+
+  release(&ptable.lock);
+  return 0;
+}
+#endif // CPS
+
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
@@ -503,14 +553,6 @@ kill(int pid)
 void
 procdump(void)
 {
-  static char *states[] = {
-  [UNUSED]    "unused",
-  [EMBRYO]    "embryo",
-  [SLEEPING]  "sleep ",
-  [RUNNABLE]  "runble",
-  [RUNNING]   "run   ",
-  [ZOMBIE]    "zombie"
-  };
   int i;
   struct proc *p;
   char *state;

@@ -80,6 +80,7 @@ OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
 DEFINES =
 DEFINES += -DGETPPID
+DEFINES += -DCPS
 CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
@@ -187,6 +188,7 @@ UPROGS=\
 	_zombie\
 	_sizeof\
 	_getppidtest\
+	_ps\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)

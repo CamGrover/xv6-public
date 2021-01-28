@@ -54,10 +54,12 @@ printf(int fd, const char *fmt, ...)
         putc(fd, c);
       }
     } else if(state == '%'){
-      if(c == 'd'){
+      if(c == 'd' || c == 'u'){
         printint(fd, *ap, 10, 1);
         ap++;
       } else if(c == 'x' || c == 'p'){
+        putc(fd, '0');
+        putc(fd, 'x');
         printint(fd, *ap, 16, 0);
         ap++;
       } else if(c == 's'){
