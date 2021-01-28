@@ -42,6 +42,19 @@ sys_getpid(void)
   return myproc()->pid;
 }
 
+#ifdef GETPPID
+int
+sys_getppid(void)
+{
+  int ppid = -1;
+
+  if (myproc()->parent) {
+    ppid = myproc()->parent->pid;
+  }
+  return ppid;
+}
+#endif // GETPPID
+
 int
 sys_sbrk(void)
 {
