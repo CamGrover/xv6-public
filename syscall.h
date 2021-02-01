@@ -20,3 +20,9 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#ifdef GETPPID
+# define SYS_getppid 22
+#endif // GETPPID
+#ifdef CPS
+# define SYS_cps 23
+#endif // CPS
