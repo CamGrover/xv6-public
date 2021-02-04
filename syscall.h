@@ -33,5 +33,5 @@
 # define SYS_kdebug 25
 #endif // KDEBUG
 #ifdef VA2PA
-# define SYS_va2pa 25
+# define SYS_va2pa 26
 #endif // VA2PA
