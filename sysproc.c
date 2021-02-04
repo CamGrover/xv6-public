@@ -102,3 +102,15 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+#ifdef KDEBUG
+int
+sys_kdebug(void)
+{
+  int n = 0;
+  if (argint(0, &n) < 0) {
+    return -1;
+  }
+  return proc_kdebug(n);
+}
+#endif // KDEBUG

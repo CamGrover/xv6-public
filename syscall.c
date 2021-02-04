@@ -109,6 +109,9 @@ extern int sys_getppid(void);
 #ifdef CPS
 extern int sys_cps(void);
 #endif // GETPPID
+#ifdef KDEBUG
+extern int sys_kdebug(void);
+#endif // KDEBUG
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -138,6 +141,9 @@ static int (*syscalls[])(void) = {
 #ifdef CPS
 [SYS_cps]     sys_cps,
 #endif // GETPPID
+#ifdef KDEBUG
+[SYS_kdebug]  sys_kdebug,
+#endif // KDEBUG
 };
 
 void

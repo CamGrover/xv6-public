@@ -118,4 +118,8 @@ int getppid(void);
 int cps(int);
 #endif // CPS
 
+#ifdef KDEBUG
+int kdebug(int);
+#endif // KDEBUG
+
 #endif // __USER_H

@@ -25,4 +25,10 @@
 #endif // GETPPID
 #ifdef CPS
 # define SYS_cps 23
+#ifdef HALT
+# define HALT 24
+#endif // HALT
 #endif // CPS
+#ifdef KDEBUG
+# define SYS_kdebug 25
+#endif // KDEBUG

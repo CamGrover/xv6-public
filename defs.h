@@ -1,3 +1,6 @@
+#ifndef __DEFS_H
+# define __DEFS_H
+
 struct buf;
 struct context;
 struct file;
@@ -186,5 +189,11 @@ void            switchkvm(void);
 int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 
+#ifdef KDEBUG
+int             proc_kdebug(int);  
+#endif // KDEBUG
+
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
+
+#endif // __DEFS_H
