@@ -114,3 +114,19 @@ sys_kdebug(void)
   return proc_kdebug(n);
 }
 #endif // KDEBUG
+
+#ifdef VA2PA
+int
+sys_va2pa(void)
+{
+  int va = 0x0;
+  char *pa = 0x0;
+  struct proc *p = myproc();
+
+  if (argint(0, &va) < 0) {
+    return 0x0;
+  }
+  pa = uva2ka(p->pgdir, (char *) va);
+  return ((int) pa);
+}
+#endif // VA2PA

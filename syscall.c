@@ -112,6 +112,9 @@ extern int sys_cps(void);
 #ifdef KDEBUG
 extern int sys_kdebug(void);
 #endif // KDEBUG
+#ifdef VA2PA
+extern int sys_va2pa(void);
+#endif // VA2PA
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -144,6 +147,9 @@ static int (*syscalls[])(void) = {
 #ifdef KDEBUG
 [SYS_kdebug]  sys_kdebug,
 #endif // KDEBUG
+#ifdef VA2PA
+[SYS_va2pa]   sys_va2pa,
+#endif // VA2PA
 };
 
 void
