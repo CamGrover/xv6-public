@@ -191,6 +191,7 @@ UPROGS=\
 	_getppidtest\
 	_ps\
 	_kdebug\
+	_addrs_xv6\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)
