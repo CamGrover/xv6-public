@@ -317,16 +317,16 @@ sys_open(void)
 #ifdef TRUNC_FILE
   if ((ip->type == T_FILE) && ((omode & O_WRONLY) || (omode & O_RDWR)) && (omode & O_TRUNC)) {
 # ifdef KDEBUG
-extern ushort proc_kdebug_level;
-if (proc_kdebug_level > 0) {
-  cprintf("kdebug: %s %d: file %s truncated\n"
-          , __FILE__, __LINE__, path);
-}
-#endif // KDEBUG
+  extern ushort proc_kdebug_level;
+  if (proc_kdebug_level > 0) {
+    cprintf("kdebug: %s %d: file %s truncated\n"
+            , __FILE__, __LINE__, path);
+  }
+# endif // KDEBUG
 
   // truncate the contentes of the file
   itruncfile(ip);
-  } 
+  }
 #endif // TRUNC_FILE
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){

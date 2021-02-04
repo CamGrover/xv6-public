@@ -69,13 +69,14 @@ cp(char *oname, char *iname)
     if ((ifd = open(iname, O_RDONLY)) >= 0) {
 #ifdef TRUNC_FILE
         flags = O_WRONLY | O_CREATE | O_TRUNC;
-#endif // TRUNC_FILE
+#else // TRUNC_FILE
         struct stat st;
         res = stat(oname, &st);
         if (res >= 0) {
             unlink(oname);
         }
         flags = O_WRONLY | O_CREATE;
+#endif // TRUNC_FILE
         if ((ofd = open(oname, flags)) >= 0) {
             for ( ; ((n = read(ifd, buf, BUFSIZE)) > 0) && ((res = write(ofd, buf, n))); ) ;
             close(ofd);
