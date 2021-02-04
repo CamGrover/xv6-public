@@ -115,6 +115,9 @@ extern int sys_kdebug(void);
 #ifdef VA2PA
 extern int sys_va2pa(void);
 #endif // VA2PA
+#ifdef LSEEK
+extern int sys_lseek(void);
+#endif // LSEEK
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -150,6 +153,9 @@ static int (*syscalls[])(void) = {
 #ifdef VA2PA
 [SYS_va2pa]   sys_va2pa,
 #endif // VA2PA
+#ifdef LSEEK
+[SYS_lseek]   sys_lseek,
+#endif // LSEEK
 };
 
 void

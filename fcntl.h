@@ -10,4 +10,10 @@
 #  define O_TRUNC 0x1000
 #endif // TRUNC_FILE
 
+#ifdef LSEEK
+# define SEEK_SET 0x1
+# define SEEK_CUR 0x2
+# define SEEK_END 0x4
+#endif // LSEEK
+
 #endif // __FCNTL_H

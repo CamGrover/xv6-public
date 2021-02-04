@@ -457,3 +457,26 @@ sys_pipe(void)
   fd[1] = fd1;
   return 0;
 }
+
+#ifdef LSEEK
+int
+sys_lseek(void)
+{
+  int fd;
+  int offset;
+  int whence;
+  struct file *file;
+
+  // We don't user the fd parameter, except to lookup the 
+  // struct file variabel. Look in argfd()
+  if (argfd(0, &fd, &file) < 0)
+    return -1;
+  if (argint(1, &offset) < 0)
+    return -1;
+  if (argint(2, &whence) < 0)
+    return -1;
+
+  return fileseek(file, offset, whence);
+
+}
+#endif // LSEEK

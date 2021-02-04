@@ -41,3 +41,6 @@ SYSCALL(kdebug)
 #ifdef VA2PA
 SYSCALL(va2pa)
 #endif // VA2PA
+#ifdef LSEEK
+SYSCALL(lseek)
+#endif // LSEEK

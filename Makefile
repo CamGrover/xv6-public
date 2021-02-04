@@ -84,6 +84,7 @@ DEFINES += -DCPS
 DEFINES += -DKDEBUG
 DEFINES += -DVA2PA
 DEFINES += -DTRUNC_FILE
+DEFINES += -DLSEEK
 CFLAGS = $(DEFINES) -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = $(DEFINES) -m32 -gdwarf-2 -Wa,-divide
@@ -196,6 +197,7 @@ UPROGS=\
 	_addrs_xv6\
 	_test_va_pa\
 	_cp\
+	_lseek_test\
 	$(NULL)
 
 fs.img: mkfs README $(UPROGS)

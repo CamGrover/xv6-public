@@ -35,3 +35,6 @@
 #ifdef VA2PA
 # define SYS_va2pa 26
 #endif // VA2PA
+#ifdef LSEEK
+# define SYS_lseek 27
+#endif // LSEEK

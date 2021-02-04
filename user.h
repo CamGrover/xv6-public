@@ -126,4 +126,8 @@ int kdebug(int);
 int va2pa(int);
 #endif // VA2PA
 
+#ifdef LSEEK
+int lseek(int, int, int);
+#endif // LSEEK
+
 #endif // __USER_H

@@ -9,12 +9,24 @@
 #include "spinlock.h"
 #include "sleeplock.h"
 #include "file.h"
+#ifdef LSEEK
+#include "fcntl.h"
+#include "mmu.h"
+#endif // LSEEK
 
 struct devsw devsw[NDEV];
 struct {
   struct spinlock lock;
   struct file file[NFILE];
 } ftable;
+
+#ifdef LSEEK
+extern ushort proc_kdebug_level;
+#endif // LSEEK
+
+#ifndef MIN
+# define MIN(_a,_b) ((_a) < (_b) ? (_a) : (_b))
+#endif // MIN
 
 void
 fileinit(void)
@@ -155,3 +167,66 @@ filewrite(struct file *f, char *addr, int n)
   panic("filewrite");
 }
 
+#ifdef LSEEK
+int
+fileseek(struct file *file, int offset, int whence)
+{
+  int tot_offset = 0;
+
+  //  Based on the offset value, the sze if the file in bytes
+  // and whence, calculate the abolute location in the file
+  switch (whence) {
+    case SEEK_SET:
+      tot_offset = offset;
+      break;
+    case SEEK_CUR:
+      tot_offset = file->off + offset;
+      break;
+    case SEEK_END:
+      tot_offset = file->ip->size + offset;
+      break;
+    default:
+      return -1;
+      break;
+  }
+
+#ifdef KDEBUG
+  if (proc_kdebug_level > 0) {
+    cprintf("kdebug: %s %d:  offset: %d  tot offset: %d  size: %d  off: %d\n"
+            , __FILE__, __LINE__, offset, tot_offset
+            , file->ip->size
+            , file->off
+          );
+  }
+#endif // KDEBUG
+
+  if (tot_offset < 0)
+    return -1;
+  if (tot_offset > file->ip->size) {
+    // the file is going to grow, we need to clear all the new space
+    int new_fbytes = tot_offset - file->ip->size;
+    char *new_mbytes = kalloc();
+
+    // since hte file is going to grow, move to the end
+    file->off = file->ip->size;
+    memset(new_mbytes, 0x0, PGSIZE);
+    while (new_fbytes > 0) {
+      // write NULLS into the hole
+      filewrite(file, new_mbytes, MIN(new_fbytes, PGSIZE));
+      new_fbytes -= PGSIZE;
+    }
+    kfree(new_mbytes);
+  }
+  file->off = tot_offset;
+#ifdef KDEBUG
+  if (proc_kdebug_level > 0) {
+    cprintf("kdebug: %s %d: tot offset: %d  size: %d  off: %d\n"
+            , __FILE__, __LINE__, tot_offset
+            , file->ip->size
+            , file->off
+          );
+  }
+#endif // KDEBUG
+  return tot_offset;
+}
+#endif // LSEEK
