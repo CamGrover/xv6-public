@@ -1,3 +1,6 @@
+#ifndef __FILE_H
+# define __FILE_H
+
 struct file {
   enum { FD_NONE, FD_PIPE, FD_INODE } type;
   int ref; // reference count
@@ -34,4 +37,5 @@ struct devsw {
 
 extern struct devsw devsw[];
 
-#define CONSOLE 1
+# define CONSOLE 1
+#endif // __FILE_H

@@ -151,6 +151,11 @@ filewrite(struct file *f, char *addr, int n)
 
       begin_op();
       ilock(f->ip);
+#ifdef APPEND_FILE
+      if (f->writable & FILE_APPENDABLE) {
+        fileseek(f, 0, SEEK_END);
+      }
+#endif // APPEND_FILE
       if ((r = writei(f->ip, addr + i, f->off, n1)) > 0)
         f->off += r;
       iunlock(f->ip);

@@ -343,7 +343,12 @@ sys_open(void)
   f->ip = ip;
   f->off = 0;
   f->readable = !(omode & O_WRONLY);
+#ifdef APPEND_FILE
+  f->writable = ((omode & O_WRONLY) || (omode & O_RDWR)) ? FILE_WRITEABLE : FILE_NOWRITE;
+  f->writable |= (f->writable && (omode & O_APPEND)) ? FILE_APPENDABLE : FILE_NOWRITE; // Or with FILE_NOWRITE is or 0 so no difference
+#else
   f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
+#endif // APPEND_FILE
   return fd;
 }
 
